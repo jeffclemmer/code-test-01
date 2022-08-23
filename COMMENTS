@@ -1,0 +1,19 @@
+## Notes
+Written in Node.js (Javascript)
+
+index.mjs uses a Unix shebang to determine the node environment to execute the included JS and has it's executable bit set (chmod +x index.mjs)
+
+Tested on Ubuntu 20.04 with Node v16.13.0
+
+## Supported Version
+Support for Node 14+ only...
+test node version with: 
+node -v
+
+## Install packages
+npm i
+
+## Run
+./index.mjs
+or
+node ./index.mjs
