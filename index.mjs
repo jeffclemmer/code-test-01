@@ -53,7 +53,7 @@ for (let i in plans) {
     // for code readability
     // join state and rate area - concat into one string
     // we use keys so we have fast access later.
-    const key = plans[i][STATE] + "-" + plans[i][RATE_AREA];
+    const key = `${zips[i][STATE]}-${zips[i][RATE_AREA]}`;
     
     // for code readability
     const value = parseFloat( plans[i][RATE] );
@@ -81,6 +81,23 @@ for (let i in planMap) {
   planMap[i].sort( (a, b) => { return a - b } );
 }
 
+/* 
+planMap looks like this:
+{
+  ...
+  state-rate_area : [ rate, rate... ]
+  'WI-3': [ 365.48, 369.4 ],
+  'IA-1': [ 273.76, 287.3, 322.34, 337.76, 388.68 ],
+  'NC-12': [
+    332.21, 344.64,
+    353.93, 357.64,
+    359.83,  384.9,
+    406.25
+  ],
+  ...
+}
+
+*/
 // uncomment to show data structure
 // console.log("planMap:", planMap);
 // process.exit();
@@ -104,7 +121,7 @@ for (let i in zips) {
       // add new entry
       
       // this is a key pointer into planMap - for readability
-      let pointer = zips[i][STATE] + "-" + zips[i][RATE_AREA];
+      let pointer = `${zips[i][STATE]}-${zips[i][RATE_AREA]}`;
       
       // make sure that the pointer exists in planMap
       // this constitutes a "join" of the two tables
@@ -122,7 +139,7 @@ for (let i in zips) {
           
           zipMap[ key ] = { 
             rate: planMap[ pointer ][1], 
-            rateAreas: [ zips[i][RATE_AREA] ] 
+            rateAreas: zips[i][RATE_AREA],
           }
           
         } else {
@@ -148,11 +165,7 @@ for (let i in zips) {
       // push the value on to the stack and move on.  the rate 
       // is still good.  if it doesn't match, then we have an 
       // ambiguous situation and we mark it as ambiguous
-      if ( typeof zipMap[ key ] == "object" &&
-        zipMap[ key ].rateAreas.includes( zips[i][RATE_AREA] ) == true 
-        ) {
-        zipMap[ key ].rateAreas.push( zips[i][RATE_AREA] );
-      } else {
+      if ( typeof zipMap[ key ] != "object" || zipMap[ key ].rateAreas != zips[i][RATE_AREA] ) {
         // blank out this entry - it's ambiguous
         zipMap[ key ] = "amibiguous";
       }
@@ -162,6 +175,19 @@ for (let i in zips) {
   }
   
 }
+
+/* 
+zipMap looks like this:
+{
+  '39745': { rate: 265.73, rateAreas: '6' },
+  '39845': { rate: 325.64, rateAreas: '15' },
+  '40813': 'no rate plan',
+  '42330': 'no rate plan',
+  '43343': 'amibiguous',
+  '46706': 'amibiguous',
+  '47387': { rate: 326.98, rateAreas: '11' },
+}
+*/
 // uncomment to show data structure
 // console.log("zipMap:", zipMap);
 // process.exit();
